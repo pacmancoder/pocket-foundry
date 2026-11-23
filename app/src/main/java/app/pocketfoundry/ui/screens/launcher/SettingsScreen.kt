@@ -78,6 +78,14 @@ class SettingsScreen(private val launcher: LauncherActivity) {
         settings.trackpadSpeed = Settings.TRACKPAD_SPEEDS[it]
     }
     private val trackpadSpeedRow by lazy { dropdownSetting("Trackpad speed", trackpadSpeed) }
+    private val longTouch = Dropdown(launcher, listOf("Right click", "Left click", "Off")) {
+        settings.longTouch = Settings.LONG_TOUCHES[it]
+        longTouchDelayRow.shown = settings.longTouch != Settings.OFF
+    }
+    private val longTouchDelay = Dropdown(launcher, Settings.LONG_TOUCH_DELAYS.map { "$it ms" }) {
+        settings.longTouchDelay = Settings.LONG_TOUCH_DELAYS[it]
+    }
+    private val longTouchDelayRow by lazy { dropdownSetting("Long touch delay", longTouchDelay) }
     private val editLayout = button(launcher, "Edit layout", size = 15f, onClick = launcher::editLayout)
     private val layoutLater = label(launcher, "In a game", 15f, Factorio.FAINT)
     // Up by the title, out of the bar below: on a narrow phone the bar has no room for it.
@@ -119,6 +127,8 @@ class SettingsScreen(private val launcher: LauncherActivity) {
         checkSetting("Vibration", settings.vibration) { settings.vibration = it },
         setting("Touch", touch),
         trackpadSpeedRow,
+        dropdownSetting("Long touch", longTouch),
+        longTouchDelayRow,
         checkSetting("FPS counter", settings.fpsCounter) { settings.fpsCounter = it },
         setting(fastStart, checkBox(launcher, settings.fastStart) {
             settings.fastStart = it
@@ -188,6 +198,9 @@ class SettingsScreen(private val launcher: LauncherActivity) {
         touch.selected = Settings.TOUCHES.indexOf(settings.touch).coerceAtLeast(0)
         trackpadSpeed.selected = Settings.TRACKPAD_SPEEDS.indexOf(settings.trackpadSpeed).coerceAtLeast(0)
         trackpadSpeedRow.shown = settings.touch != Settings.DIRECT
+        longTouch.selected = Settings.LONG_TOUCHES.indexOf(settings.longTouch).coerceAtLeast(0)
+        longTouchDelay.selected = Settings.LONG_TOUCH_DELAYS.indexOf(settings.longTouchDelay).coerceAtLeast(0)
+        longTouchDelayRow.shown = settings.longTouch != Settings.OFF
         showFastStart()
         note.shown = Session.inGame
         credit.shown = !Session.inGame
